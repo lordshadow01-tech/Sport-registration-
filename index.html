@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Sports Registration Portal</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--card2:#273449;--tx:#f1f5f9;--mut:#94a3b8;--pri:#f59e0b;--pri2:#d97706;--ok:#22c55e;--bad:#ef4444;--bd:#334155}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);padding:env(safe-area-inset-top) 0 40px}
+.wrap{max-width:720px;margin:0 auto;padding:14px}
+.tag{font-size:11px;color:var(--mut);text-align:center;margin-bottom:6px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
+h1{font-size:22px;margin:0 0 6px;text-align:center}
+h2{font-size:17px;margin:0 0 10px}
+.sub{color:var(--mut);font-size:13px;margin:0 0 14px;text-align:center;line-height:1.4}
+label.f{display:block;font-size:13px;color:var(--mut);margin:12px 0 5px}
+input[type=text],input[type=password],input[type=number],select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card2);color:var(--tx);font-size:15px}
+input[readonly]{opacity:.6}
+button{font-family:inherit;cursor:pointer}
+.btn{display:inline-block;border:0;border-radius:10px;padding:11px 16px;font-size:15px;font-weight:600;background:var(--pri);color:#1a1200}
+.btn:hover{background:var(--pri2)}.btn.full{width:100%;margin-top:16px}
+.btn.sec{background:var(--card2);color:var(--tx);border:1px solid var(--bd)}
+.btn.bad{background:#7f1d1d;color:#fff}.btn.sm{padding:7px 11px;font-size:13px}
+.btn:disabled{opacity:.5}
+.link{background:none;border:0;color:var(--mut);font-size:13px;text-decoration:underline;padding:8px;display:block;margin:6px auto 0}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:11px;border-radius:10px;border:1px solid var(--bd);background:var(--card2);color:var(--tx);font-size:15px}
+.seg button.on{background:var(--pri);color:#1a1200;border-color:var(--pri);font-weight:700}
+.seg button:disabled{opacity:.5}
+.gt{font-size:13px;font-weight:600;margin:12px 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip input{display:none}
+.chip span{display:inline-block;padding:7px 12px;border-radius:99px;border:1px solid var(--bd);background:var(--card2);font-size:13px}
+.chip input:checked+span{background:var(--pri);color:#1a1200;border-color:var(--pri);font-weight:700}
+.hint{font-size:13px;color:var(--mut);padding:8px 0}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tags span{background:var(--card2);border:1px solid var(--bd);padding:4px 10px;border-radius:99px;font-size:12px}
+.notice{background:#422006;border:1px solid #b45309;color:#fde68a;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px;line-height:1.4}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.sp{justify-content:space-between}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card2);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:24px;color:var(--pri)}.stat small{color:var(--mut)}
+.mem{background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-top:10px}
+.mem .n{font-weight:700;font-size:15px}.mem .m{font-size:12px;color:var(--mut);margin-top:3px}
+.mem .a{display:flex;gap:6px;margin-top:10px}
+.log{font-size:13px;padding:6px 0;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:8px}
+.log:last-child{border:0}
+.adm{display:flex;gap:6px;margin-top:8px;align-items:center}
+.adm span{font-size:12px;color:var(--mut);width:56px;flex:none}
+.adm.off{opacity:.45}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:14px;z-index:50}
+.modal .card{width:100%;max-width:520px;margin-top:20px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0b1220;border:1px solid var(--bd);padding:11px 16px;border-radius:12px;font-size:14px;z-index:99;max-width:90%;text-align:center}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="tag">lord_.of_.shadow</div>
+
+<!-- LOADING -->
+<section id="viewLoading" class="card hide"><p class="sub" style="margin:0">⏳ Loading...</p></section>
+
+<!-- RETRY -->
+<section id="viewRetry" class="card hide">
+  <h2>📶 Network problem</h2>
+  <p class="sub">Server connect aagala. Konjam neram kazhichu try pannunga.</p>
+  <button class="btn full" onclick="initMember()">Retry</button>
+</section>
+
+<!-- REGISTER -->
+<section id="viewReg" class="hide">
+  <div class="card">
+    <h1>🏆 Sports Registration</h1>
+    <p class="sub">Oru thadava mattum register pannalam. Name &amp; Roll No apram maatha mudiyaadhu.</p>
+    <div id="rNotice" class="notice hide">Admin unga registration-a remove pannitaanga. Unga pazhaya details fill aagirukku — venum-na maathi, sports add / remove panni thirumba register pannunga.</div>
+    <label class="f">Full Name</label><input type="text" id="rName" maxlength="80" autocomplete="off">
+    <label class="f">Roll Number</label><input type="text" id="rRoll" maxlength="30" autocomplete="off">
+    <label class="f">Department</label>
+    <select id="rDept"><option value="">— Select —</option><option>BPT</option></select>
+    <label class="f">Year</label>
+    <select id="rYear"><option value="">Select</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select>
+    <label class="f">Gender</label>
+    <div class="seg" id="rGender"><button type="button" data-v="Male">👦 Male</button><button type="button" data-v="Female">👧 Female</button></div>
+    <label class="f">Sports (multiple select pannalam)</label>
+    <div id="rSports"></div>
+    <button class="btn full" id="rBtn">Register ✨</button>
+  </div>
+  <button class="link" onclick="showLogin()">🔒 Admin Login</button>
+</section>
+
+<!-- DONE -->
+<section id="viewDone" class="hide">
+  <div class="card">
+    <h1>✅ Registered!</h1>
+    <p class="sub">Unga registration mudinjidhu. Sports add / remove pannalam. Name / Roll No maathanum-na Admin approval venum.</p>
+    <div class="mem" id="dInfo"></div>
+    <button class="btn full" id="dEditBtn">✏️ Edit Sports (add / remove)</button>
+  </div>
+  <div class="card hide" id="dEdit">
+    <h2>✏️ Edit My Details</h2>
+    <p class="sub" style="text-align:left">Sport add or remove pannalam. Gender-um maathikalam (gender maathina, andha gender-ku illaadha sports remove aagidum).</p>
+    <label class="f">Gender</label>
+    <div class="seg" id="eGender"><button type="button" data-v="Male">👦 Male</button><button type="button" data-v="Female">👧 Female</button></div>
+    <label class="f">Sports</label>
+    <div id="eSports"></div>
+    <div class="row" style="margin-top:16px"><button class="btn" id="eSave">Save</button><button class="btn sec" id="eCancel">Cancel</button></div>
+  </div>
+  <button class="link" onclick="showLogin()">🔒 Admin Login</button>
+</section>
+
+<!-- LOGIN -->
+<section id="viewLogin" class="hide">
+  <div class="card">
+    <h1>🔒 Admin Login</h1>
+    <p class="sub">Authorized admins mattum.</p>
+    <label class="f">Username</label><input type="text" id="lUser" autocomplete="username" autocapitalize="off">
+    <label class="f">Password</label><input type="password" id="lPass" autocomplete="current-password">
+    <button class="btn full" id="lBtn">Login</button>
+  </div>
+  <button class="link" onclick="initMember()">← Back to Registration</button>
+</section>
+
+<!-- ADMIN -->
+<section id="viewAdmin" class="hide">
+  <div class="card">
+    <div class="row sp"><h2 style="margin:0">📊 Dashboard</h2><button class="btn sm sec" onclick="logout()">Logout</button></div>
+    <p class="sub" style="text-align:left;margin:6px 0 12px">Logged in: <b id="aUser"></b></p>
+    <div class="stats">
+      <div class="stat"><b id="sTotal">0</b><small>Total</small></div>
+      <div class="stat"><b id="sBoys">0</b><small>Boys</small></div>
+      <div class="stat"><b id="sGirls">0</b><small>Girls</small></div>
+    </div>
+    <div class="row">
+      <button class="btn sm" onclick="openModal('add')">➕ Add Member</button>
+      <select id="fSport" style="flex:1;min-width:140px"></select>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn sm sec" onclick="dlExcel()">⬇ Excel</button>
+      <button class="btn sm sec" onclick="dlPDF()">⬇ PDF</button>
+      <button class="btn sm sec" onclick="dlPDFMobile()">📱 PDF (Mobile)</button>
+      <button class="btn sm sec" onclick="dlCSV()">⬇ CSV</button>
+    </div>
+    <div id="aList"></div>
+  </div>
+
+  <div class="card">
+    <h2>👤 My Account</h2>
+    <label class="f" style="margin-top:0">My username (maathikalam)</label>
+    <input type="text" id="myName" maxlength="30">
+    <button class="btn sm" style="margin-top:10px" onclick="saveMyName()">Save Username</button>
+  </div>
+
+  <div class="card hide" id="boxAdmins">
+    <h2>👑 Manage Admins</h2>
+    <p class="sub" style="text-align:left">Username edhuvum vechukalam. Password fixed: Admin 1 oru password, Admin 2-10 vera password.</p>
+    <label class="f" style="margin-top:0">Admin count (1-10)</label>
+    <div class="row"><select id="admCount" style="width:90px"></select><button class="btn sm" onclick="saveCount()">Save</button></div>
+    <div id="admList"></div>
+  </div>
+
+  <div class="card hide" id="boxLogs">
+    <h2>🕘 Admin Login Activity</h2>
+    <div id="logList"></div>
+  </div>
+</section>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal hide" id="modal">
+  <div class="card">
+    <h2 id="mTitle">Add Member</h2>
+    <div id="mNote" class="notice hide"></div>
+    <label class="f" style="margin-top:0">Full Name</label><input type="text" id="mName" maxlength="80">
+    <label class="f">Roll Number</label><input type="text" id="mRoll" maxlength="30">
+    <label class="f">Department</label>
+    <select id="mDept"><option value="">— Select —</option><option>BPT</option></select>
+    <label class="f">Year</label>
+    <select id="mYear"><option value="">Select</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select>
+    <label class="f">Gender</label>
+    <div class="seg" id="mGender"><button type="button" data-v="Male">👦 Male</button><button type="button" data-v="Female">👧 Female</button></div>
+    <label class="f">Sports</label>
+    <div id="mSports"></div>
+    <div class="row" style="margin-top:16px"><button class="btn" id="mSave">Save</button><button class="btn sec" onclick="closeModal()">Cancel</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+// ===== PDF OFFICE SETTINGS (inga maathikonga) =====
+const ORG_NAME    = "Excel College of Physiotherapy and Research Center";    // Office / College name
+const EVENT_TITLE = "Annual Sports Meet - Registration List";
+// ==================================================
+const API = "https://script.google.com/macros/s/AKfycbzWI1yzitPdnPzzB_Yc0NNvpzv48N4YDGPeJV0rlQJjf6lPK_Gwjc0i20pfeIgvChCgkw/exec";
+const GAMES = {Male:["Cricket","Volley ball","Kabaddi","Football","Carrom","Chess","Badminton"],
+               Female:["Turf Cricket","Throw ball","Kho-Kho","Tennikoit","Carrom","Chess","Badminton"]};
+const ATH = {Male:["100 m","200 m","400 m","1500 m","4*100m Relay","Shotput","Disc throw"],
+             Female:["100 m","200 m","400 m","800 m","4*100m Relay","Shotput","Disc throw"]};
+const sportsFor = g => { const k = g === "Female" ? "Female" : "Male"; return GAMES[k].concat(ATH[k].map(x => "Athletics - " + x)); };
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ERR = {dup:"Intha Roll No already register aagirukku.", empty:"Ellaa details-um fill pannunga (sports kandippa 1).",
+  login:"Username / Password thappu.", auth:"Session mudinjidhu, thirumba login pannunga.", none:"Member kidaikala.",
+  forbidden:"Ungalukku intha permission illa.", net:"Network problem. Thirumba try pannunga.", server:"Server error. Thirumba try pannunga.", busy:"Server romba busy. 10 second kazhichu thirumba try pannunga."};
+
+let toastT;
+function toast(m){ const t=document.createElement("div"); t.className="toast"; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const REG_JITTER_MS=4000;   // member register-ku max random wait (ms). 50+ members na 6000 varaikkum increase pannalam
+const uid=()=>(window.crypto&&crypto.randomUUID)?crypto.randomUUID():(Date.now().toString(36)+Math.random().toString(36).slice(2,12));
+// Auto-retry with random backoff when server is busy (many users at the same time). User ku error theriyaadhu.
+async function api(d){
+  if(d.action==="register"&&!d.reqId) d.reqId=uid();     // same reqId on retry -> backend never double-registers
+  // Member register: random 0-4s gap so 50 members' requests spread out (ellarum ore second-la server-a thaakkaadhu)
+  if(d.action==="register"&&!d.token) await sleep(Math.random()*REG_JITTER_MS);
+  const RETRY={net:1,busy:1,server:1}, MAX=8;
+  let r, retried=false;
+  for(let i=0;i<MAX;i++){
+    try{
+      const res=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)});
+      r=JSON.parse(await res.text());
+    }catch(e){ r={ok:false,error:"net"}; }
+    if(r.ok||!RETRY[r.error]) break;
+    if(i<MAX-1){
+      if(i===1) toast("Server konjam busy, auto retry aagudhu... 🔄");
+      retried=true;
+      await sleep(Math.min(9000,800*Math.pow(2,i))*(0.6+Math.random()*0.8));
+    }
+  }
+  if(retried&&!r.ok&&r.error==="none"&&d.action==="delete") r={ok:true};   // delete already went through on an earlier try
+  return r;
+}
+function show(id){ ["viewLoading","viewRetry","viewReg","viewDone","viewLogin","viewAdmin"].forEach(v=>$(v).classList.toggle("hide",v!==id)); window.scrollTo(0,0); }
+
+/* ---------- shared UI helpers ---------- */
+function segGet(id){ const b=document.querySelector("#"+id+" button.on"); return b?b.dataset.v:""; }
+function segSet(id,v){ document.querySelectorAll("#"+id+" button").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); }
+function segBind(id,cb){ document.querySelectorAll("#"+id+" button").forEach(b=>b.onclick=()=>{ if(b.disabled)return; segSet(id,b.dataset.v); cb&&cb(b.dataset.v); }); }
+function renderSports(id,gender,sel,only){
+  const box=$(id);
+  if(!gender){ box.innerHTML='<div class="hint">Munnadi Gender select pannunga 👆</div>'; return; }
+  const list = only ? sportsFor(gender).filter(x=>only.includes(x)) : sportsFor(gender);
+  const games=list.filter(x=>!x.startsWith("Athletics - ")), ath=list.filter(x=>x.startsWith("Athletics - "));
+  const grp=(t,a)=>a.length?`<div class="gt">${t}</div><div class="chips">${a.map(x=>`<label class="chip"><input type="checkbox" value="${esc(x)}" ${sel.includes(x)?"checked":""}><span>${esc(x.replace("Athletics - ",""))}</span></label>`).join("")}</div>`:"";
+  box.innerHTML = grp("🏏 Games",games)+grp("🏃 Athletics",ath);
+}
+function sportsGet(id){ return [...document.querySelectorAll("#"+id+" input:checked")].map(i=>i.value); }
+function tagsHtml(a){ return '<div class="tags">'+a.map(x=>`<span>${esc(x)}</span>`).join("")+'</div>'; }
+
+/* ---------- MEMBER FLOW ---------- */
+let cur=null, oldKey=null;
+const mLoad=()=>{ try{return JSON.parse(localStorage.getItem("sr_member")||"null");}catch(e){return null;} };
+const mSave=o=>{ try{localStorage.setItem("sr_member",JSON.stringify(o));}catch(e){} };
+const mClear=()=>{ try{localStorage.removeItem("sr_member");}catch(e){} };
+
+function fillReg(m){
+  $("rName").value=m?m.name:""; $("rRoll").value=m?m.roll:""; $("rDept").value=m?m.dept:""; $("rYear").value=m?m.year:"";
+  segSet("rGender",m?m.gender:""); renderSports("rSports",m?m.gender:"",m?m.sports:[]);
+  $("rNotice").classList.toggle("hide",!m);
+}
+function showReg(prefill){ fillReg(prefill||null); show("viewReg"); }
+function showDone(){
+  const m=cur;
+  $("dInfo").innerHTML=`<div class="n">${esc(m.name)}</div><div class="m">Roll No: ${esc(m.roll)} • ${esc(m.dept)} • ${esc(m.year)} • ${esc(m.gender)}</div>`+tagsHtml(m.sports);
+  $("dEdit").classList.add("hide"); show("viewDone");
+}
+async function initMember(){
+  const s=mLoad();
+  if(!s||!s.roll||!s.key){ oldKey=null; showReg(); return; }
+  show("viewLoading");
+  const r=await api({action:"memberStatus",roll:s.roll,key:s.key});
+  if(r.ok&&r.status==="active"){ cur=r.member; oldKey=null; showDone(); }
+  else if(r.ok&&r.status==="removed"){ oldKey=s.key; showReg(r.member); }
+  else if(r.error==="none"||r.error==="auth"){ mClear(); oldKey=null; showReg(); }
+  else show("viewRetry");
+}
+segBind("rGender",g=>renderSports("rSports",g,sportsGet("rSports")));
+$("rBtn").onclick=async()=>{
+  const b={action:"register",name:$("rName").value.trim(),roll:$("rRoll").value.trim(),dept:$("rDept").value,
+    year:$("rYear").value,gender:segGet("rGender"),sports:sportsGet("rSports")};
+  if(!b.name||!b.roll||!b.dept||!b.year||!b.gender||!b.sports.length) return toast(ERR.empty);
+  if(oldKey) b.oldKey=oldKey;
+  $("rBtn").disabled=true; $("rBtn").textContent="Registering... ⏳"; const r=await api(b);
+  $("rBtn").disabled=false; $("rBtn").textContent="Register ✨";
+  if(!r.ok) return toast(ERR[r.error]||ERR.server);
+  mSave({roll:b.roll,key:r.key}); oldKey=null;
+  cur={name:b.name,roll:b.roll,dept:b.dept,year:b.year,gender:b.gender,sports:b.sports};
+  showDone(); toast("Registered ✅");
+};
+$("dEditBtn").onclick=()=>{ segSet("eGender",cur.gender); renderSports("eSports",cur.gender,cur.sports); $("dEdit").classList.remove("hide"); $("dEdit").scrollIntoView({behavior:"smooth"}); };
+$("eCancel").onclick=()=>$("dEdit").classList.add("hide");
+segBind("eGender",g=>renderSports("eSports",g,sportsGet("eSports")));
+$("eSave").onclick=async()=>{
+  const s=mLoad(), g=segGet("eGender"), sp=sportsGet("eSports");
+  if(!sp.length) return toast("Kandippa 1 sport select pannunga.");
+  $("eSave").disabled=true;
+  const r=await api({action:"memberSports",roll:s.roll,key:s.key,gender:g,sports:sp});
+  $("eSave").disabled=false;
+  if(!r.ok) return toast(ERR[r.error]||ERR.server);
+  cur.gender=r.gender; cur.sports=r.sports; showDone(); toast("Saved ✅");
+};
+
+/* ---------- ADMIN ---------- */
+let token=sessionStorage.getItem("sr_tok")||"", role="", user="", rows=[], admins=[], logins=[], modalMode="add", editRoll="";
+function showLogin(){ $("lUser").value=""; $("lPass").value=""; show("viewLogin"); }
+$("lBtn").onclick=async()=>{
+  const u=$("lUser").value.trim(), p=$("lPass").value;
+  if(!u||!p) return toast("Username & Password kudunga.");
+  $("lBtn").disabled=true; const r=await api({action:"login",user:u,pass:p}); $("lBtn").disabled=false;
+  if(!r.ok) return toast(ERR[r.error]||ERR.server);
+  token=r.token; sessionStorage.setItem("sr_tok",token); loadAdmin();
+};
+function logout(){ token=""; sessionStorage.removeItem("sr_tok"); initMember(); }
+async function loadAdmin(){
+  show("viewLoading");
+  const r=await api({action:"list",token});
+  if(!r.ok){ if(r.error==="net"||r.error==="server"){ show("viewRetry"); return; } token=""; sessionStorage.removeItem("sr_tok"); toast(ERR.auth); showLogin(); return; }
+  rows=r.rows; admins=r.admins||[]; logins=r.logins||[]; user=r.user; role=r.role;
+  renderAdmin(); show("viewAdmin");
+}
+function filtered(){ const f=$("fSport").value; return f?rows.filter(r=>r.sports.includes(f)):rows; }
+function renderAdmin(){
+  $("aUser").textContent=user+(role==="super"?" 👑":"");
+  const all=[...new Set(sportsFor("Male").concat(sportsFor("Female")))], keep=$("fSport").value;
+  $("fSport").innerHTML='<option value="">All sports</option>'+all.map(x=>`<option ${x===keep?"selected":""}>${esc(x)}</option>`).join("");
+  const list=filtered();
+  $("sTotal").textContent=list.length;
+  $("sBoys").textContent=list.filter(r=>r.gender==="Male").length;
+  $("sGirls").textContent=list.filter(r=>r.gender==="Female").length;
+  $("aList").innerHTML=list.length?list.map(r=>`<div class="mem"><div class="n">${esc(r.name)}</div>
+    <div class="m">Roll No: ${esc(r.roll)} • ${esc(r.dept)} • ${esc(r.year)} • ${esc(r.gender)}${r.addedBy?" • by "+esc(r.addedBy):""}</div>${tagsHtml(r.sports)}
+    <div class="a"><button class="btn sm sec" data-e="${esc(r.roll)}">✏️ Edit</button><button class="btn sm bad" data-d="${esc(r.roll)}">🗑 Remove</button></div></div>`).join("")
+    :'<p class="hint">Members illa.</p>';
+  document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>openModal("edit",rows.find(x=>x.roll===b.dataset.e)));
+  document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>delMember(b.dataset.d));
+  $("myName").value=user;
+  const sup=role==="super"; $("boxAdmins").classList.toggle("hide",!sup); $("boxLogs").classList.toggle("hide",!sup);
+  if(sup){
+    const n=admins.filter(a=>a.active).length;
+    $("admCount").innerHTML=Array.from({length:10},(_,i)=>`<option ${i+1===n?"selected":""}>${i+1}</option>`).join("");
+    $("admList").innerHTML=admins.map(a=>`<div class="adm ${a.active?"":"off"}"><span>Admin ${a.slot}</span><input type="text" id="an${a.slot}" value="${esc(a.name)}" maxlength="30"><button class="btn sm sec" onclick="renameAdmin(${a.slot})">Save</button></div>`).join("");
+    $("logList").innerHTML=logins.length?logins.map(l=>`<div class="log"><span>${esc(l.name)} (Admin ${l.slot})</span><span>${fmt(l.time)}</span></div>`).join(""):'<p class="hint">Activity illa.</p>';
+  }
+}
+$("fSport").onchange=renderAdmin;
+function fmt(t){ try{ const d=new Date(t); return isNaN(d)?t:d.toLocaleString("en-IN"); }catch(e){ return t; } }
+async function adminCall(d,okMsg){
+  const r=await api(Object.assign({token},d));
+  if(!r.ok){ if(r.error==="auth"){ logout(); } toast(ERR[r.error]||ERR.server); return false; }
+  if(okMsg) toast(okMsg); return true;
+}
+async function delMember(roll){
+  if(!confirm("Intha member-a remove pannava? ("+roll+")\nMember thirumba register panna mudiyum.")) return;
+  if(await adminCall({action:"delete",roll},"Removed ✅")) loadAdmin();
+}
+async function saveMyName(){
+  const u=$("myName").value.trim(); if(!u) return toast("Username kudunga.");
+  if(await adminCall({action:"renameSelf",username:u},"Username saved ✅")) loadAdmin();
+}
+async function saveCount(){ if(await adminCall({action:"setCount",count:Number($("admCount").value)},"Saved ✅")) loadAdmin(); }
+async function renameAdmin(slot){
+  const u=$("an"+slot).value.trim(); if(!u) return toast("Username kudunga.");
+  if(await adminCall({action:"rename",slot,username:u},"Saved ✅")) loadAdmin();
+}
+
+/* ---------- ADD / EDIT MODAL ---------- */
+function openModal(mode,m){
+  modalMode=mode; editRoll=m?m.roll:"";
+  $("mTitle").textContent=mode==="add"?"➕ Add Member":"✏️ Edit Member";
+  $("mName").value=m?m.name:""; $("mRoll").value=m?m.roll:""; $("mRoll").readOnly=mode==="edit";
+  $("mDept").value=m?m.dept:""; $("mYear").value=m?m.year:"";
+  segSet("mGender",m?m.gender:"");
+  const locked=mode==="edit"&&role!=="super";
+  document.querySelectorAll("#mGender button").forEach(b=>b.disabled=locked);
+  renderSports("mSports",m?m.gender:"",m?m.sports:[],locked?m.sports:null);
+  $("mNote").textContent=locked?"Admin 2-10: sports remove mattum panna mudiyum. Sport add / gender maatha mudiyaadhu.":"";
+  $("mNote").classList.toggle("hide",!locked);
+  $("modal").classList.remove("hide");
+}
+function closeModal(){ $("modal").classList.add("hide"); }
+segBind("mGender",g=>renderSports("mSports",g,sportsGet("mSports")));
+$("mSave").onclick=async()=>{
+  const d={name:$("mName").value.trim(),roll:$("mRoll").value.trim(),dept:$("mDept").value,year:$("mYear").value,gender:segGet("mGender"),sports:sportsGet("mSports")};
+  if(!d.name||!d.roll||!d.dept||!d.year||!d.gender||!d.sports.length) return toast(ERR.empty);
+  d.action=modalMode==="add"?"register":"update"; if(modalMode==="edit") d.roll=editRoll;
+  $("mSave").disabled=true; const ok=await adminCall(d,"Saved ✅"); $("mSave").disabled=false;
+  if(ok){ closeModal(); loadAdmin(); }
+};
+
+/* ---------- DOWNLOADS ---------- */
+const stamp=()=>new Date().toISOString().slice(0,10);
+function tableRows(){ return filtered().map((r,i)=>[i+1,r.roll,r.name,r.dept,r.year,r.gender,r.sports.join(", "),r.addedBy,fmt(r.time)]); }
+const HEADS=["S.No","Roll No","Name","Department","Year","Gender","Sports","Added By","Registered Time"];
+function saveBlob(blob,name){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500); }
+function dlCSV(){
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const csv=[HEADS].concat(tableRows()).map(r=>r.map(q).join(",")).join("\r\n");
+  saveBlob(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),"sports_registration_"+stamp()+".csv");
+}
+function dlExcel(){
+  if(!window.XLSX) return toast("Excel library load aagala. Internet check pannunga.");
+  const ws=XLSX.utils.aoa_to_sheet([HEADS].concat(tableRows()));
+  ws["!cols"]=[6,14,24,12,10,8,45,14,20].map(w=>({wch:w}));
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Registrations");
+  XLSX.writeFile(wb,"sports_registration_"+stamp()+".xlsx");
+}
+function dlPDFMobile(){
+  if(!window.jspdf) return toast("PDF library load aagala. Internet check pannunga.");
+  const list=filtered(), W=270, H=480, M=12, CW=W-2*M;          // 270x480 pt = 9:16 mobile screen
+  const doc=new window.jspdf.jsPDF({unit:"pt",format:[W,H],orientation:"portrait"});
+  doc.setProperties({title:"Sports Registration Report"});
+  const NAVY=[15,23,42], GRAY=[100,116,139], LINE=[226,232,240], AMBER=[245,158,11];
+  const boys=list.filter(r=>r.gender==="Male").length, girls=list.filter(r=>r.gender==="Female").length;
+  const filt=$("fSport").value||"All sports";
+  let y=0;
+
+  function header(first){
+    if(first){
+      doc.setFillColor(...NAVY); doc.rect(0,0,W,66,"F");
+      doc.setFillColor(...AMBER); doc.rect(0,66,W,3,"F");
+      doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(16); doc.text("Sports Registration",M,27);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(203,213,225);
+      doc.text("Filter: "+filt,M,43); doc.text("Generated: "+new Date().toLocaleString("en-IN"),M,55);
+      y=82;
+      const bw=(CW-12)/3, stats=[["Total",list.length],["Boys",boys],["Girls",girls]];
+      stats.forEach((s,i)=>{
+        const x=M+i*(bw+6);
+        doc.setFillColor(241,245,249); doc.roundedRect(x,y,bw,40,5,5,"F");
+        doc.setFont("helvetica","bold"); doc.setFontSize(17); doc.setTextColor(...NAVY); doc.text(String(s[1]),x+bw/2,y+20,{align:"center"});
+        doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(...GRAY); doc.text(s[0],x+bw/2,y+32,{align:"center"});
+      });
+      y+=54;
+      doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...NAVY); doc.text("Member List",M,y); y+=8;
+    } else {
+      doc.setFillColor(...NAVY); doc.rect(0,0,W,22,"F");
+      doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.text("Sports Registration",M,14);
+      y=32;
+    }
+  }
+  function layout(items,maxW){
+    doc.setFont("helvetica","bold"); doc.setFontSize(7.5);
+    let x=0,row=0; const out=[];
+    items.forEach(s=>{
+      const w=doc.getTextWidth(s)+10;
+      if(x+w>maxW&&x>0){ x=0; row++; }
+      out.push({s,x,row,w}); x+=w+4;
+    });
+    return {out,h:out.length?row*17+13:0};
+  }
+
+  header(true);
+  if(!list.length){ doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(...GRAY); doc.text("No members found.",M,y+14); }
+
+  list.forEach((r,i)=>{
+    const accent=r.gender==="Female"?[219,39,119]:[37,99,235], inner=CW-22;
+    doc.setFont("helvetica","bold"); doc.setFontSize(10.5);
+    const nl=doc.splitTextToSize((i+1)+". "+r.name,inner-46);
+    const pills=layout(r.sports,inner);
+    const h=10+nl.length*13+12+12+8+10+pills.h+9;
+    if(y+h>H-30){ doc.addPage([W,H],"portrait"); header(false); }
+    doc.setFillColor(255,255,255); doc.setDrawColor(...LINE); doc.setLineWidth(0.8); doc.roundedRect(M,y,CW,h,5,5,"FD");
+    doc.setFillColor(...accent); doc.roundedRect(M,y,4,h,2,2,"F");
+    const cx=M+13; let ty=y+15;
+    doc.setFont("helvetica","bold"); doc.setFontSize(7);
+    const gw=doc.getTextWidth(r.gender)+10;
+    doc.setFillColor(...accent); doc.roundedRect(M+CW-gw-7,y+7,gw,12,6,6,"F");
+    doc.setTextColor(255); doc.text(r.gender,M+CW-gw-7+gw/2,y+15.5,{align:"center"});
+    doc.setFont("helvetica","bold"); doc.setFontSize(10.5); doc.setTextColor(...NAVY); doc.text(nl,cx,ty); ty+=nl.length*13;
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...GRAY);
+    doc.text("Roll No:",cx,ty); doc.setTextColor(30,41,59); doc.setFont("helvetica","bold"); doc.text(String(r.roll),cx+34,ty); ty+=12;
+    doc.setFont("helvetica","normal"); doc.setTextColor(...GRAY); doc.text("Dept / Year:",cx,ty);
+    doc.setTextColor(30,41,59); doc.setFont("helvetica","bold"); doc.text(`${r.dept}  |  ${r.year}`,cx+48,ty); ty+=10;
+    doc.setDrawColor(...LINE); doc.line(cx,ty,M+CW-8,ty); ty+=9;
+    doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(...GRAY); doc.text("SPORTS",cx,ty); ty+=4;
+    doc.setFont("helvetica","bold"); doc.setFontSize(7.5);
+    pills.out.forEach(p=>{
+      const ath=p.s.startsWith("Athletics");
+      doc.setFillColor(...(ath?[220,252,231]:[254,243,199])); doc.roundedRect(cx+p.x,ty+p.row*17,p.w,13,6.5,6.5,"F");
+      doc.setTextColor(...(ath?[22,101,52]:[146,64,14])); doc.text(p.s,cx+p.x+5,ty+p.row*17+9);
+    });
+    y+=h+7;
+  });
+
+  const N=doc.getNumberOfPages();
+  for(let p=1;p<=N;p++){
+    doc.setPage(p);
+    doc.setDrawColor(...LINE); doc.setLineWidth(0.8); doc.line(M,H-22,W-M,H-22);
+    doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(...GRAY);
+    doc.text("Sports Registration Portal",M,H-12);
+    doc.text(`Page ${p} of ${N}`,W-M,H-12,{align:"right"});
+  }
+  doc.save("sports_registration_"+stamp()+".pdf");
+}
+
+/* ---------- Office style PDF (A4, department wise -> year wise) ---------- */
+function dlPDF(){
+  if(!window.jspdf) return toast("PDF library load aagala. Internet check pannunga.");
+  const doc=new window.jspdf.jsPDF({unit:"pt",format:"a4",orientation:"portrait"});
+  if(typeof doc.autoTable!=="function") return toast("PDF table library load aagala. Internet check pannunga.");
+  const list=filtered(), W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(), M=40, CW=W-2*M;
+  const INK=[17,24,39], GRAY=[75,85,99], NAVY=[30,41,59];
+  const boys=list.filter(r=>r.gender==="Male").length, girls=list.filter(r=>r.gender==="Female").length;
+  const filt=$("fSport").value||"All sports";
+  doc.setProperties({title:(ORG_NAME?ORG_NAME+" - ":"")+EVENT_TITLE});
+
+  // ---- Letterhead ----
+  let y=44;
+  doc.setTextColor(...INK);
+  if(ORG_NAME){
+    doc.setFont("times","bold"); doc.setFontSize(15);
+    const orgLines=doc.splitTextToSize(ORG_NAME.toUpperCase(),CW);   // long name-na 2 line-ah wrap aagum
+    doc.text(orgLines,W/2,y,{align:"center"}); y+=orgLines.length*18+2;
+  }
+  doc.setFont("times","bold"); doc.setFontSize(ORG_NAME?12.5:16); doc.text(EVENT_TITLE,W/2,y,{align:"center"}); y+=10;
+  doc.setDrawColor(...INK); doc.setLineWidth(1.4); doc.line(M,y,W-M,y);
+  doc.setLineWidth(0.5); doc.line(M,y+3,W-M,y+3); y+=18;
+  doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(...GRAY);
+  doc.text("Sport: ",M,y); doc.setFont("helvetica","bold"); doc.setTextColor(...INK); doc.text(filt,M+27,y);
+  doc.setFont("helvetica","normal"); doc.setTextColor(...GRAY);
+  doc.text("Date: "+new Date().toLocaleDateString("en-IN"),W-M,y,{align:"right"}); y+=14;
+  doc.setTextColor(...INK); doc.setFont("helvetica","bold");
+  doc.text(`Total: ${list.length}      Boys: ${boys}      Girls: ${girls}`,M,y); y+=14;
+
+  if(!list.length){
+    doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(...GRAY); doc.text("No members found.",M,y+12);
+  }
+
+  // ---- Department wise -> Year wise (1st to 3rd, then 4th) ----
+  const YEARS=["1st Year","2nd Year","3rd Year","4th Year"];
+  const depts=[...new Set(list.map(r=>r.dept))].sort();
+  depts.forEach(dept=>{
+    const inDept=list.filter(r=>r.dept===dept);
+    const yrs=[...new Set(inDept.map(r=>r.year))].sort((a,b)=>{ const ia=YEARS.indexOf(a), ib=YEARS.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib)||String(a).localeCompare(String(b)); });
+    yrs.forEach(year=>{
+      const grp=inDept.filter(r=>r.year===year).sort((a,b)=>String(a.roll).localeCompare(String(b.roll),undefined,{numeric:true}));
+      if(y>H-130){ doc.addPage(); y=M; }
+      doc.autoTable({
+        startY:y, margin:{left:M,right:M,top:M,bottom:40}, theme:"grid",
+        styles:{font:"helvetica",fontSize:9,cellPadding:{top:4,bottom:4,left:5,right:5},lineColor:[156,163,175],lineWidth:0.5,textColor:INK,valign:"middle"},
+        headStyles:{fillColor:NAVY,textColor:255,fontStyle:"bold",halign:"left"},
+        columnStyles:{0:{cellWidth:30,halign:"center"},1:{cellWidth:78},2:{cellWidth:"auto"},3:{cellWidth:46},4:{cellWidth:165}},
+        alternateRowStyles:{fillColor:[243,244,246]},
+        head:[
+          [{content:`Department: ${dept}     |     ${year}     |     Total: ${grp.length}`,colSpan:5,styles:{fillColor:[229,231,235],textColor:INK,fontSize:10,fontStyle:"bold"}}],
+          ["S.No","Roll No","Name","Gender","Sports"]
+        ],
+        body:grp.map((r,i)=>[i+1,String(r.roll),r.name,r.gender,r.sports.join(", ")])
+      });
+      y=doc.lastAutoTable.finalY+18;
+    });
+  });
+
+  // ---- Page numbers ----
+  const N=doc.getNumberOfPages();
+  for(let p=1;p<=N;p++){
+    doc.setPage(p); doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...GRAY);
+    doc.text(`Page ${p} of ${N}`,W-M,H-22,{align:"right"});
+  }
+  doc.save("sports_registration_"+stamp()+".pdf");
+}
+
+/* ---------- START ---------- */
+if(token) loadAdmin(); else initMember();
+</script>
+</body>
+</html>
